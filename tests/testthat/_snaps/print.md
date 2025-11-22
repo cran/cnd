@@ -35,7 +35,7 @@
       cnd:cond_cnd_class/error 
       
       help
-      [cnd()] simple calls the appropriate function: [stop()], [warning()], or [message()] based on the `type` parameter from [cnd::condition()]. 
+      [cnd::cnd()] simple calls the appropriate function: [stop()], [warning()], or [message()] based on the `type` parameter from [cnd::condition()]. 
       
       exports
         cnd::cnd()
@@ -61,6 +61,9 @@
         $ old : <symbol> 
         $ new : <symbol> 
       
+      help
+      Defining a new condition with the same class and package as an existing condition will overwrite the previous definition.  It is recommended to either avoid this by fully defining your condition, or creating a new condition instead. 
+      
       exports
         cnd::condition()
 
@@ -77,9 +80,17 @@
          Component ".class": 1 string mismatch
          Component "class": 1 string mismatch
          Component "condition_function": target, current do not match when deparsed
-         Component ".class": 1 string mismatch
+         Component "message": Component "class": 1 string mismatch
+         Component "message": Component "original_class": 1 string mismatch
+         Component "message": Component "res": 1 string mismatch
+         Component "message": Component "res": target, current do not match when deparsed
          Component "class": 1 string mismatch
-         Component "condition_function": target, current do not match when deparsed
+         Component "condition_env": Component ".class": 1 string mismatch
+         Component "condition_env": Component "class": 1 string mismatch
+         Component "condition_env": Component "condition_function": target, current do not match when deparsed
+         Component "original_class": 1 string mismatch
+         Component "res": 1 string mismatch
+         Component "res": target, current do not match when deparsed
 
 ---
 
