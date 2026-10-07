@@ -14,7 +14,11 @@
 #'     }
 #'     \item{`cnd.call`\cr`[TRUE|FALSE]`}{
 #'       Whether to print the call that generated the condition.  This is
-#'       embedded within the [conditionCall()] method.
+#'       embedded within the [base::conditionCall()] method.
+#'     }
+#'     \item{`cnd.warn.immediate`\cr`[TRUE|FALSE]`}{
+#'       Whether to immediately print warnings.  This temporarily changes
+#'       `options("warn") <- 1`
 #'     }
 #'   }
 "_PACKAGE"
@@ -46,7 +50,8 @@ cnd_evaluate <- function() {
 op.cnd <- list(
   cnd.cli.override = "none",
   cnd.condition.message = "verbose",
-  cnd.call = TRUE
+  cnd.call = TRUE,
+  cnd.warn.immediate = TRUE
 )
 
 .onLoad <- function(libname, pkgname) {
@@ -64,5 +69,20 @@ delayedAssign(
     overwrite = TRUE,
     name = ".__CND_REGISTRY__.",
     env = .cnd_env
+  )
+)
+
+delayedAssign(
+  "internal_error",
+  condition(
+    "internal_error",
+    function(...) .msg(...) %||% "An internal error has occurred.",
+    type = "error",
+    package = "cnd",
+    help = c(
+      "This is an internal error, which means that something has gone",
+      " (horribly?) wrong within [cnd].  If you believe this is a problem",
+      " please provide a report at <https://github.com/jmbarbone/cnd/issues>"
+    )
   )
 )

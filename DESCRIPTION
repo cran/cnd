@@ -1,6 +1,6 @@
 Package: cnd
 Title: Create and Register Conditions
-Version: 0.1.1
+Version: 0.2.0
 Authors@R: 
     person(
       "Jordan Mark", "Barbone", , 
@@ -17,16 +17,17 @@ BugReports: https://github.com/jmbarbone/cnd/issues
 URL: https://jmbarbone.github.io/cnd/, https://github.com/jmbarbone/cnd
 Encoding: UTF-8
 Language: en-US
-RoxygenNote: 7.3.3
 Depends: R (>= 4.1)
 Suggests: cli (>= 3.6.5), here (>= 1.0.2), roxygen2 (>= 7.3.3),
         spelling (>= 2.3.2), testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Config/testthat/parallel: false
+Config/roxygen2/version: 8.1.0
+Imports: tools
 NeedsCompilation: no
-Packaged: 2025-11-22 04:36:59 UTC; jordan
+Packaged: 2026-10-07 21:13:36 UTC; jordan
 Author: Jordan Mark Barbone [aut, cph, cre] (ORCID:
     <https://orcid.org/0000-0001-9788-3628>)
 Maintainer: Jordan Mark Barbone <jmbarbone@gmail.com>
 Repository: CRAN
-Date/Publication: 2025-11-22 04:50:02 UTC
+Date/Publication: 2026-10-07 22:10:09 UTC

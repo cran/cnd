@@ -9,12 +9,12 @@ test_that("condition() conditions", {
 
   expect_warning(
     condition("foo", exports = "exports", package = NULL),
-    class = "cnd:no_package_exports"
+    class = "cnd::no_package_exports_warning"
   )
 
   expect_error(
     condition("foo", 1),
-    class = "cnd:invalid_condition_message"
+    class = "cnd::condition_message_error"
   )
 })
 
@@ -40,16 +40,16 @@ test_that("conditions(x) <- value", {
 })
 
 test_that("find_cond() works", {
-  expect_identical(find_cond(cond_cnd_class), cond_cnd_class)
+  expect_identical(find_cond(cnd_class_error), cnd_class_error)
 })
 
 test_that("find_cond() fails", {
-  expect_error(find_cond("foo:bar"))
+  expect_error(find_cond("foo::bar"))
   expect_error(find_cond("foooo"))
 })
 
 test_that("cnd()", {
-  expect_error(cnd(1), class = "cnd:cond_cnd_class")
+  expect_error(cnd(1), class = "cnd::cnd_class_error")
 
   con <- condition(
     "foo_message",
@@ -89,7 +89,7 @@ test_that("cnd()", {
 test_that("condition(existing)", {
   reg <- local_registry()
   foo <- condition("foo", package = "foo", registry = reg)
-  expect_identical(condition("foo:foo"), foo)
+  expect_identical(condition("foo::foo"), foo)
 })
 
 test_that("condition(help = gets_collapsed)", {
@@ -100,21 +100,21 @@ test_that("condition(help = gets_collapsed)", {
 
 test_that("conditions(..1)", {
   expect_warning(
-    conditions("cond_cnd_class", "cnd"),
-    class = cond_conditions_dots$class
+    conditions("cnd_class_error", "cnd"),
+    class = conditions_dots_warning$class
   )
 })
 
 test_that("condition(type = 'condition')", {
   reg <- local_registry()
   foo <- condition("foo", type = "condition", package = "help", registry = reg)
-  expect_identical(foo, condition("help:foo"))
+  expect_identical(foo, condition("help::foo"))
   expect_snapshot(foo())
 })
 
 test_that("find_cond()", {
   expect_s3_class(
-    find_cond("cnd:cond_cnd_class/error"),
+    find_cond("cnd::cnd_class_error/error"),
     "cnd::condition_generator"
   )
 
@@ -132,46 +132,46 @@ test_that("find_cond()", {
 test_that("validate_condition()", {
   expect_error(
     validate_condition(1, NULL, NULL),
-    class = "cnd:invalid_condition"
+    class = "cnd::invalid_condition_error"
   )
 
   expect_error(
     validate_condition(letters, NULL, NULL),
-    class = "cnd:invalid_condition"
+    class = "cnd::invalid_condition_error"
   )
 
   expect_error(
     validate_condition("foo!bar", NULL, NULL),
-    class = "cnd:invalid_condition"
+    class = "cnd::invalid_condition_error"
   )
 
   expect_error(
     validate_condition("foo", NULL, 1),
-    class = "cnd:invalid_condition"
+    class = "cnd::invalid_condition_error"
   )
 
   expect_error(
     validate_condition("foo", 1, NULL),
-    class = "cnd:invalid_condition"
+    class = "cnd::invalid_condition_error"
   )
 })
 
 test_that("cget() and $ and [", {
   expect_identical(
-    cget(cond_cnd_class, "class"),
-    cond_cnd_class$class
+    cget(cnd_class_error, "class"),
+    cnd_class_error$class
   )
 
   expect_identical(
-    cget(cond_cnd_class, "class"),
-    cond_cnd_class["class"]
+    cget(cnd_class_error, "class"),
+    cnd_class_error["class"]
   )
 })
 
 test_that("as.character() error", {
   expect_error(
-    as.character(cond_as_character_condition),
-    class = "cnd:as_character_cnd_error"
+    as.character(condition_as_character_error),
+    class = "cnd::condition_as_character_error"
   )
 })
 
@@ -180,7 +180,7 @@ test_that(".call", {
   if (Sys.info()[["sysname"]] == "Linux") {
     skip_on_ci()
   }
-  get_call <- function(expr) tryCatch(expr, error = function(e) e$call)
+  get_call <- function(expr) tryCatch(expr, error = \(e) e$call)
   err <- condition("foo", type = "error", register = FALSE, package = NULL)
   foo <- function() stop(err())
   expect_identical(get_call(foo()), quote(foo()))
@@ -192,7 +192,7 @@ test_that(".call", {
 
   foo <- function() cnd(err(.call = FALSE))
   expect_null(get_call(foo()))
-  expect_snapshot(foo2(), error = TRUE)
+  expect_snapshot(foo(), error = TRUE)
 
   fizz <- function() bar()
 
@@ -226,15 +226,43 @@ test_that("cnd(condition) handling", {
     class = "cnd::condition"
   )
 
-  expect_no_condition(
-    expect_output(suppress_conditions(cnd(foo())), NA),
-    class = "cnd::condition"
+  expect_output(
+    expect_no_condition(
+      suppress_conditions(cnd(foo())),
+    ),
+    NA
   )
 })
 
 test_that("conditinMessage(condition_generator)", {
   expect_error(
     conditionMessage(condition("foo", register = FALSE)),
-    class = "cnd:condition_message_generator"
+    class = "cnd::condition_message_generator_error"
+  )
+})
+
+test_that("condition_generators are closures, and not subsettable", {
+  co <- condition("_", register = FALSE)
+  co$extra <- TRUE
+  expect_true(co$extra)
+})
+
+test_that("condition(class) is deprecated", {
+  expect_warning(
+    condition(class = "foo"),
+    class = "deprecated_warning"
+  )
+})
+
+test_that("condition(package:condition)", {
+  expect_identical(
+    conditions("cnd::cnd_class_error/error")[[1]],
+    cnd_class_error
+  )
+})
+
+test_that("condition('foo')(<anything>)", {
+  expect_snapshot(
+    cnd(condition("_message_override_", register = FALSE)("<anything>"))
   )
 })

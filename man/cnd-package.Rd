@@ -22,7 +22,11 @@ information.  \code{"simple"} will only provide the message.
 }
 \item{\code{cnd.call}\cr\verb{[TRUE|FALSE]}}{
 Whether to print the call that generated the condition.  This is
-embedded within the \code{\link[=conditionCall]{conditionCall()}} method.
+embedded within the \code{\link[base:conditionCall]{base::conditionCall()}} method.
+}
+\item{\code{cnd.warn.immediate}\cr\verb{[TRUE|FALSE]}}{
+Whether to immediately print warnings.  This temporarily changes
+\code{options("warn") <- 1}
 }
 }
 }
@@ -32,6 +36,11 @@ embedded within the \code{\link[=conditionCall]{conditionCall()}} method.
 }
 \author{
 \strong{Maintainer}: Jordan Mark Barbone \email{jmbarbone@gmail.com} (\href{https://orcid.org/0000-0001-9788-3628}{ORCID}) [copyright holder]
+
+Authors:
+\itemize{
+  \item Jordan Mark Barbone \email{jmbarbone@gmail.com} (\href{https://orcid.org/0000-0001-9788-3628}{ORCID}) [copyright holder]
+}
 
 }
 \keyword{internal}

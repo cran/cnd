@@ -10,6 +10,8 @@
 coverage](https://codecov.io/gh/jmbarbone/cnd/graph/badge.svg)](https://app.codecov.io/gh/jmbarbone/cnd)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/cnd)](https://CRAN.R-project.org/package=cnd)
 <!-- badges: end -->
 
 The goal of `{cnd}` is to provide easy, customized classes for your
@@ -88,7 +90,7 @@ condition
 #> cnd::condition_progenitor
 #> 
 #> generator
-#>   $ class    : <symbol> 
+#>   $ name     : <symbol> 
 #>   $ message  : NULL
 #>   $ type     : <language> c("condition", "message", "warning", "error")
 #>   $ package  : <language> get_package()
@@ -96,22 +98,24 @@ condition
 #>   $ help     : NULL
 #>   $ registry : <symbol> package
 #>   $ register : <language> !is.null(registry)
+#>   $ classes  : NULL
+#>   $ class    : <symbol> 
 #> 
 #> condition(s)
-#> cnd:as_character_cnd_error/error
-#> cnd:condition_message_generator/error
-#> cnd:condition_overwrite/warning
-#> cnd:invalid_condition/error
-#> cnd:invalid_condition_message/error
-#> cnd:match_arg/error
-#> cnd:no_package_exports/warning
+#> cnd::condition_as_character_error/error
+#> cnd::condition_message_error/error
+#> cnd::condition_message_generator_error/error
+#> cnd::condition_overwrite_warning/warning
+#> cnd::invalid_condition_error/error
+#> cnd::match_arg/error
+#> cnd::no_package_exports_warning/warning
 #> 
 #> For a list of conditions: `cnd::conditions()`
 ```
 
-> Note: `condition` is of mode “function” but does not retain “function”
-> as a class. `condition` also has several conditions which can be
-> signaled directly or indirectly.
+> [!NOTE]
+> `condition` is of mode "function" but does not retain "function" as a class.
+> `condition` also has several conditions which can be signaled directly or indirectly.
 
 Use `condition()` to create a *generator*, then use that *generator*
 within your functions:
@@ -143,7 +147,8 @@ foo <- function(x) {
 
 
 foo(-1)
-#> Error in foo(): <bad_value>
+#> Error in `foo()`:
+#> ! <bad_value>
 #> Value has to be better
 ```
 
@@ -154,7 +159,7 @@ that are used in creating a custom message.
 bad_value2 <- condition(
   "bad_value2",
   message = function(x) {
-    sprintf("`x` must be `>=0`. A value of `%s` is no good", format(x))
+    sprintf("`x` must be `>0`. A value of `%s` is no good", format(x))
   },
   type = "error"
 )
@@ -171,17 +176,17 @@ bad_value2
 bad_value2(0)
 #> bad_value2/error
 #> (bad_value2/cnd::condition/error/condition)
-#> `x` must be `>=0`. A value of `0` is no good
+#> `x` must be `>0`. A value of `0` is no good
 bad_value2(-1)
 #> bad_value2/error
 #> (bad_value2/cnd::condition/error/condition)
-#> `x` must be `>=0`. A value of `-1` is no good
+#> `x` must be `>0`. A value of `-1` is no good
 
 # note: this does not provide any tests, so you may produce non-nonsensical messages
 bad_value2(10)
 #> bad_value2/error
 #> (bad_value2/cnd::condition/error/condition)
-#> `x` must be `>=0`. A value of `10` is no good
+#> `x` must be `>0`. A value of `10` is no good
 
 
 # now when used in your function:
@@ -193,17 +198,18 @@ foo <- function(x) {
 }
 
 foo(-1.2)
-#> Error in foo(): <bad_value2>
-#> `x` must be `>=0`. A value of `-1.2` is no good
+#> Error in `foo()`:
+#> ! <bad_value2>
+#> `x` must be `>0`. A value of `-1.2` is no good
 ```
 
 ## Your package
 
-There are three things you can do to get the most out of `{cnd}` within
+There are three steps you can take to get the most out of `{cnd}` within
 your package.
 
-- Creating a `registry` within your package  
-- Assigning a `"condition"` attribute to your functions  
+- Creating a `registry` within your package\
+- Assigning a `"condition"` attribute to your functions\
 - Documenting your conditions
 
 ### Registry
@@ -214,20 +220,18 @@ will be able to find this and use it to connect your conditions to your
 functions and to other outputs.
 
 Simple add `cnd_registry()` to an `R/` script in your package. If you
-are going to save an store conditions as objects (recommended) then you
-should ensure that the `cnd_registry()` call is made before any
+are going to save and store conditions as objects (recommended) then you
+should ensure that the `cnd_registry()` call is made *before* any
 conditions are created.
 
-> **NOTE** `cnd_registry()` is designed to use `assign()` within your
-> package environment. Please read the documentation to ensure the
-> environment is not masked by other objects.
+> [!NOTE] 
+> `cnd_registry()` is designed to use `assign()` within your package environment.
+> Please read the documentation to ensure the environment is not masked by other objects.
 
-> **NOTE** By default, `condition(registry = )` will pick up on the
-> `registry` object within your package when you create your conditions
-> and functions are loaded. However, interactive use may not provide the
-> same results. See the examples in `cnd_create_registry()` for an
-> example of how to create a new registry and assign conditions to the
-> registry.
+> [!NOTE]
+> By default, `condition(registry = )` will pick up on the `registry` object within your package when you create your conditions and functions are loaded.
+> However, interactive use may not provide the same results.
+> See the examples in `cnd_create_registry()` for an example of how to create a new registry and assign conditions to the registry.
 
 ### Assigning conditions
 
@@ -275,8 +279,8 @@ cat(cnd_section(cnd))
 #> 
 #> \describe{
 #>   
-#>   \item{[`cnd:cond_cnd_class/error`][cnd-cnd-conditions]}{
-#>     [cnd::cnd()] simple calls the appropriate function: [stop()], [warning()], or [message()] based on the `type` parameter from [cnd::condition()].
+#>   \item{[`cnd::cnd_class_error/error`][cnd-cnd-conditions]}{
+#>     [cnd::cnd()] simple calls the appropriate function: [base::stop()], [base::warning()], or [base::message()] based on the `type` parameter from [cnd::condition()].
 #>   }
 #> 
 #> }
@@ -301,19 +305,17 @@ by specific packages.
 conditions("cnd", type = "warning")
 ```
 
-    #> [[1]]
     #> cnd::condition_generator
-    #> cnd:cnd_document_conditions/warning 
+    #> cnd::cnd_document_conditions/warning 
     #> 
     #> help
     #> Documentation will fail when no conditions are found.  You may be executing [cnd::cnd_document()] too early, before conditions have been registered.  You can try to find your conditions with [cnd::conditions()]. 
     #> 
     #> exports
     #>   cnd::cnd_document()
-    #> 
-    #> [[2]]
+    #> -------------------------------------------------------------------------------- 
     #> cnd::condition_generator
-    #> cnd:condition_overwrite/warning 
+    #> cnd::condition_overwrite_warning/warning 
     #> 
     #> generator
     #>   $ old : <symbol> 
@@ -324,20 +326,18 @@ conditions("cnd", type = "warning")
     #> 
     #> exports
     #>   cnd::condition()
-    #> 
-    #> [[3]]
+    #> -------------------------------------------------------------------------------- 
     #> cnd::condition_generator
-    #> cnd:conditions_dots/warning 
+    #> cnd::conditions_dots_warning/warning 
     #> 
     #> help
     #> The `...` parameter in [cnd::conditions()] is meant for convenience.  Only a single argument is allowed.  Other parameters must be named  explicitly.  For example:  ```r # Instead of this conditions("class", "package") # "package" is ignored with a warning  # Do this conditions(class = "class", package = "package") ``` 
     #> 
     #> exports
     #>   cnd::conditions()
-    #> 
-    #> [[4]]
+    #> -------------------------------------------------------------------------------- 
     #> cnd::condition_generator
-    #> cnd:no_package_exports/warning 
+    #> cnd::no_package_exports_warning/warning 
     #> 
     #> help
     #> The `exports` parameter requires a `package` 
@@ -402,8 +402,8 @@ local({
 #> lines
 ```
 
-> Currently `message()` and therefore `cnd()` send message conditions to
-> the `stderr()`, thus usually giving them an colored text.
+> [!NOTE]
+> Currently `message()` and therefore `cnd()` send message conditions to the `stderr()`, thus usually giving them colored text.
 
 Another benefit in using `cnd(condition)` is being able to control for
 messages printed to the `stdout()`. Using `cat()` can sometimes create

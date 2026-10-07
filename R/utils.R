@@ -133,6 +133,10 @@ rcode <- function(...) {
   collapse("```r", ..., "```", sep = "\n")
 }
 
+md5sum <- function(x) {
+  unname(tools::md5sum(x))
+}
+
 # conditions --------------------------------------------------------------
 
 cond_match_arg <- NULL
@@ -140,13 +144,12 @@ delayedAssign(
   "cond_match_arg",
   condition(
     "match_arg",
+    classes = "input_error",
     type = "error",
     package = "cnd",
     exports = "condition",
-    help = "Mostly [match.arg()] but with a custom condition",
-    # fmt: skip
-    # nolint next: brace_linter.
-    message = function(arg, value, choices)
+    help = "Mostly [base::match.arg()] but with a custom condition",
+    message = function(arg, value, choices) {
       fmt(
         "Argument '{arg}' not valid\n",
         "value  : {value}\n",
@@ -155,5 +158,6 @@ delayedAssign(
         value = value,
         choices = collapse(choices, sep = ", ")
       )
+    }
   )
 )
